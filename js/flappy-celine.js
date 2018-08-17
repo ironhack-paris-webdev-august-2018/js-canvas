@@ -1,3 +1,36 @@
+function Pipe (myX, myY, myWidth, myHeight) {
+  this.x = myX;
+  this.y = myY;
+  this.width = myWidth;
+  this.height = myHeight;
+  this.isCrashed = false;
+}
+
+Pipe.prototype.drawMe = function () {
+  if (!celine.isCrashed) {
+    // if the game isn't over continue to move and draw as green
+
+    // decrease the x to animate a leftward movement
+    this.x -= 2;
+    // if pipe is off-screen reset it back to the right
+    if (this.x < -this.width) {
+      this.x = 1000;
+    }
+  }
+
+  // if the pipe has crashed color it red
+  if (this.isCrashed) {
+    ctx.fillStyle = "crimson";
+  }
+  else {
+    ctx.fillStyle = "#057e04";
+  }
+
+  ctx.fillRect(this.x, this.y, this.width, this.height);
+};
+
+
+
 function collision (rectA, rectB) {
   return rectA.y + rectA.height >= rectB.y
      &&  rectA.y <= rectB.y + rectB.height
@@ -41,34 +74,14 @@ var celine = {
   }
 };
 
+var pipe1 = new Pipe(970, 0, 30, 250);
+var pipe2 = new Pipe(800, 450, 30, 200);
+var pipe3 = new Pipe(650, 0, 30, 250);
+var pipe4 = new Pipe(1020, 350, 30, 300);
+var pipe5 = new Pipe(1170, 0, 45, 200);
+var pipe6 = new Pipe(1320, 400, 30, 250);
 
-// Our first pipe
-var pipe1 = {
-  x: 970,
-  y: 0,
-  width: 30,
-  height: 300,
-  isCrashed: false,
-  drawMe: function () {
-    if (this.isCrashed) {
-      // if this pipe has crashed don't move the the left and draw as red
-      ctx.fillStyle = "crimson";
-    }
-    else {
-      // if the pipe is still good continue to move and draw as green
-
-      // decrease the x to animate a leftward movement
-      this.x -= 2;
-      // if pipe is off-screen reset it back to the right
-      if (this.x < -this.width) {
-        this.x = 1000;
-      }
-
-      ctx.fillStyle = "#057e04";
-    }
-    ctx.fillRect(this.x, this.y, this.width, this.height);
-  }
-};
+var allPipes = [ pipe1, pipe2, pipe3, pipe4, pipe5, pipe6 ];
 
 var gameOver = {
   x: 311,
@@ -100,12 +113,15 @@ function drawScene () {
   ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
 
   celine.drawMe();
-  pipe1.drawMe();
 
-  if (collision(celine, pipe1)) {
-    celine.isCrashed = true;
-    pipe1.isCrashed = true;
-  }
+  allPipes.forEach(function (onePipe) {
+    onePipe.drawMe();
+
+    if (collision(celine, onePipe)) {
+      celine.isCrashed = true;
+      onePipe.isCrashed = true;
+    }
+  });
 
   if (celine.isCrashed) {
     gameOver.drawMe();
